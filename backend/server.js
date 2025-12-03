@@ -18,6 +18,31 @@ app.use(cors({
   allowedHeaders: ["Content-Type"],
 }));
 
+// Initialisation de la base
+async function initDB() {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        email VARCHAR(100) UNIQUE NOT NULL
+      );
+    `);
+
+    await pool.query(`
+      INSERT INTO users (name, email)
+      VALUES 
+        ('Alice', 'alice@example.com'),
+        ('Bob', 'bob@example.com')
+      ON CONFLICT DO NOTHING;
+    `);
+
+    console.log("Database initialized");
+  } catch (err) {
+    console.error("Database initialization error:", err);
+  }
+}
+
 // Route test
 app.get("/api", (req, res) => {
   res.json({
@@ -47,8 +72,10 @@ app.get("/db", async (req, res) => {
   }
 });
 
-// Démarrage serveur
-app.listen(PORT, () => {
-  console.log(`Backend listening on port ${PORT}`);
+// Démarrage serveur après initialisation DB
+initDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Backend listening on port ${PORT}`);
+  });
 });
 
