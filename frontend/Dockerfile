@@ -1,13 +1,13 @@
-# Utiliser l'image Nginx alpine, qui est légère
+# Image Nginx légère
 FROM nginx:alpine
 
-# Copier les fichiers statiques dans le répertoire par défaut d'Nginx
+# Copier les fichiers statiques dans le répertoire par défaut de Nginx
 COPY index.html /usr/share/nginx/html/
 COPY style.css /usr/share/nginx/html/
 
-# Exposer le port 80 (port HTTP standard)
+# Exposer le port HTTP
 EXPOSE 80
 
-# Commande par défaut pour démarrer Nginx (assurez-vous que Nginx reste actif)
-CMD ["nginx", "-g", "daemon off;"]
+# La commande par défaut de Nginx :
+# nginx -g 'daemon off;'
 
