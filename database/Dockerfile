@@ -1,6 +1,7 @@
-FROM postgres :15 - alpine
-2
-3 # Copy initialization script
-4 COPY init . sql / docker - entrypoint - initdb . d / init . sql
-5
-6 EXPOSE 5432
+FROM postgres:15-alpine
+
+# Copy initialization script
+COPY init.sql /docker-entrypoint-initdb.d/init.sql
+
+EXPOSE 5432
+
