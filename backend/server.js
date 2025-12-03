@@ -1,34 +1,24 @@
-const express = require("express"); // Framework web
-const cors = require("cors"); // Gestion CORS
-const { Pool } = require("pg"); // Client PostgreSQL
+const express = require("express");
+const cors = require("cors");
+const { Pool } = require("pg");
 
 const app = express();
-const PORT = process.env.PORT || 3000; // Port configurable
+const PORT = process.env.PORT || 3000;
 
-// Database connection configuration
+// Pool PostgreSQL
 const pool = new Pool({
-  host: process.env.DB_HOST || "db",
-  port: process.env.DB_PORT || 5432,
-  user: process.env.DB_USER || "admin",
-  password: process.env.DB_PASSWORD || "secret",
-  database: process.env.DB_NAME || "mydb",
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
 });
 
-// MIDDLEWARE CORS : Autorise les requêtes cross-origin
-app.use(
-  cors({
-    origin: [
-      "http://localhost:8080", // Frontend via port hôte
-      "http://127.0.0.1:8080", // Alternative localhost
-      "http://localhost:*", // Tous ports localhost (DEV SEULEMENT)
-      "http://backend", // Nom service Docker (tests internes)
-    ],
-    methods: ["GET", "POST", "OPTIONS"],
-    allowedHeaders: ["Content-Type"],
-  })
-);
+// Middleware CORS
+app.use(cors({
+  origin: "*", // Render + Frontend distant
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type"],
+}));
 
-// ROUTE API PRINCIPALE
+// Route test
 app.get("/api", (req, res) => {
   res.json({
     message: "Hello from Backend!",
@@ -38,7 +28,7 @@ app.get("/api", (req, res) => {
   });
 });
 
-// ROUTE DATABASE : Récupérer les données de la base
+// Route DB
 app.get("/db", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM users");
@@ -57,10 +47,8 @@ app.get("/db", async (req, res) => {
   }
 });
 
-// DÉMARRAGE SERVEUR
+// Démarrage serveur
 app.listen(PORT, () => {
   console.log(`Backend listening on port ${PORT}`);
-  console.log(`API endpoint: http://localhost:${PORT}/api`);
-  console.log(`DB endpoint: http://localhost:${PORT}/db`);
 });
 
